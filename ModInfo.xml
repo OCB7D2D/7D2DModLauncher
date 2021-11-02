@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xml>
+	<ModInfo>
+		<Name value="ElectricityButtonsPush" />
+		<Description value="Push Button Circuits (toggle or power duration)" />
+		<Website value="https://github.com/OCB7D2D/ElectricityButtonsPush" />
+		<Author value="mgreter" />
+		<Version value="0.1" />
+	</ModInfo>
+	<DMT>
+		<dependencies>
+			<dependency>ElectricityOverhaul</dependency>
+		</dependencies>
+		<conflicts />
+	</DMT>
+</xml>
