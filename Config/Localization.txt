@@ -1,2 +1,2 @@
 Key,File,Type,UsedInMainMenu,NoTranslate,english,Context / Alternate Text,german,latam,french,italian,japanese,koreana,polish,brazilian,russian,turkish,schinese,tchinese,spanish
-ocbBlockPushPowerButton,UI,HUD,,,Push Button,Schalter drücken
+ocbBlockPushPowerButton,UI,HUD,,,Push Button,Schalter betätigen

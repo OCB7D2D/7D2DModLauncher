@@ -24,11 +24,16 @@ public class BlockButtonPush : BlockPowered
     Vector3i _blockPos,
     BlockValue _blockValue)
   {
+	  Log.Out("OnBlockAdded 1");
     base.OnBlockAdded(_world, _chunk, _blockPos, _blockValue);
-    if (_world.GetTileEntity(_chunk.ClrIdx, _blockPos) is TileEntityPoweredTrigger) return;
+	  Log.Out("OnBlockAdded 2");
+    if (_world.GetTileEntity(_chunk.ClrIdx, _blockPos) is TileEntityButtonPush) return;
+	  Log.Out("OnBlockAdded 3");
     TileEntityPowered tileEntity = this.CreateTileEntity(_chunk);
     tileEntity.localChunkPos = World.toBlock(_blockPos);
+	  Log.Out("OnBlockAdded 4");
     tileEntity.InitializePowerData();
+	  Log.Out("OnBlockAdded 5");
     _chunk.AddTileEntity((TileEntity) tileEntity);
     (tileEntity as TileEntityButtonPush).UpdateEmissionColor(null);
   }
@@ -49,7 +54,7 @@ public class BlockButtonPush : BlockPowered
   {
     TileEntityButtonPush entityPoweredTrigger = new TileEntityButtonPush(chunk);
     entityPoweredTrigger.PowerItemType =  (PowerItem.PowerItemTypes) 243;
-    entityPoweredTrigger.TriggerType = PowerTrigger.TriggerTypes.Motion;
+    // entityPoweredTrigger.TriggerType = PowerTrigger.TriggerTypes.Motion;
     return (TileEntityPowered) entityPoweredTrigger;
   }
 
@@ -63,8 +68,6 @@ public class BlockButtonPush : BlockPowered
     TileEntityButtonPush tileEntity = _world.GetTileEntity(_clrIdx, _blockPos) as TileEntityButtonPush;
     PlayerActionsLocal playerInput = ((EntityPlayerLocal) _entityFocusing).playerInput;
     if (tileEntity == null) return "{No tile entitiy}";
-	// tileEntity = RewindToPushButtonCircuitRoot(tileEntity);
-    // if (!(tileEntity.PowerItem is PowerTrigger trigger)) return "{No power item}"; // trigger.IsActive
 	return Localization.Get("ocbBlockPushPowerButton");
   }
 
@@ -72,8 +75,8 @@ public class BlockButtonPush : BlockPowered
   {
 	  while (node != null)
 	  {
-		if (node.PowerItem != null && node.PowerItem.Parent != null) {
-			if (node.PowerItem.Parent.TileEntity is TileEntityButtonPush btn) {
+		if (node.GetPowerItem() != null && node.GetPowerItem().Parent != null) {
+			if (node.GetPowerItem().Parent.TileEntity is TileEntityButtonPush btn) {
 				node = btn;
 				continue;
 			}
@@ -98,10 +101,11 @@ public class BlockButtonPush : BlockPowered
 
 	public void UpdateStates(WorldBase _world, int _cIdx, TileEntityButtonPush tileEntity, TileEntityButtonPush root = null)
 	{
+		if (tileEntity == null || tileEntity.GetPowerItem() == null) return;
 		if (root == null) root = RewindToPushButtonCircuitRoot(root);
 		tileEntity.UpdateEmissionColor(root);
-		for (int i = 0; i < tileEntity.PowerItem.Children.Count; i++) {
-			PowerItem child = tileEntity.PowerItem.Children[i];
+		for (int i = 0; i < tileEntity.GetPowerItem().Children.Count; i++) {
+			PowerItem child = tileEntity.GetPowerItem().Children[i];
 			Log.Out("HasChild " + child.PowerItemType);
 			if (child is PowerTrigger trigger) {
 				if (trigger.TileEntity is TileEntityButtonPush te) {
@@ -111,31 +115,6 @@ public class BlockButtonPush : BlockPowered
 			}
 		}
 	}
-
-  public void UpdateState(WorldBase _world, int _cIdx, TileEntityButtonPush tileEntity, bool flag1)
-  {
-    //BlockEntityData blockEntity = _world.ChunkClusters[_cIdx].GetBlockEntity(tileEntity.ToWorldPos());
-    //if (blockEntity != null && (Object) blockEntity.transform != (Object) null && (Object) blockEntity.transform.gameObject != (Object) null)
-    //{
-	//	PowerTrigger item = tileEntity.PowerItem as PowerTrigger;
-    //  Renderer[] componentsInChildren = blockEntity.transform.gameObject.GetComponentsInChildren<Renderer>();
-    //  if (componentsInChildren != null)
-    //  {
-	//Log.Out("Has componentsInChildren " + componentsInChildren);
-    //    for (int index = 0; index < componentsInChildren.Length; ++index)
-    //    {
-    //      if ((Object) componentsInChildren[index].material != (Object) componentsInChildren[index].sharedMaterial)
-    //        componentsInChildren[index].material = new Material(componentsInChildren[index].sharedMaterial);
-    //      componentsInChildren[index].material.SetColor("_EmissionColor", flag1 ? Color.green : Color.red);
-    //      componentsInChildren[index].sharedMaterial = componentsInChildren[index].material;
-    //      componentsInChildren[index].material.EnableKeyword("_EMISSION");
-    //      // componentsInChildren[index].material.EnableKeyword("_COLOR");
-    //    }
-    //  }
-    //}
-
-  }
-
 
   public override bool OnBlockActivated(
     int cmd,
@@ -154,18 +133,25 @@ public class BlockButtonPush : BlockPowered
     if (!(_world.GetTileEntity(_cIdx, _blockPos) is TileEntityButtonPush tileEntity))
       return false;
 	tileEntity = RewindToPushButtonCircuitRoot(tileEntity);
-    if (cmd== 0)
+    if (cmd == 0)
     {
-		PowerTrigger item = tileEntity.PowerItem as PowerTrigger;
-		if (item.TriggerPowerDuration == PowerTrigger.TriggerPowerDurationTypes.Always) {
-			if (item.IsActive) {
-				tileEntity.ResetTrigger();
-				UpdateStates(_world, _cIdx, tileEntity, tileEntity);
-				return true;
-			}
+		PowerTrigger item = tileEntity.GetPowerItem() as PowerTrigger;
+		if (item == null) {
+			tileEntity.hasToggle = true;
+			tileEntity.SetModified();
+			return true;
 		}
-		tileEntity.IsTriggered = !tileEntity.IsTriggered;
-		UpdateStates(_world, _cIdx, tileEntity, tileEntity);
+		else {
+			tileEntity.IsTriggered = !tileEntity.IsTriggered;
+			UpdateStates(_world, _cIdx, tileEntity, tileEntity);
+		}
+		// if (item.TriggerPowerDuration == PowerTrigger.TriggerPowerDurationTypes.Always) {
+		// 	if (item.IsActive) {
+		// 		tileEntity.ResetTrigger();
+		// 		UpdateStates(_world, _cIdx, tileEntity, tileEntity);
+		// 		return true;
+		// 	}
+		// }
 	}
 	else if (cmd == 1)
 	{
