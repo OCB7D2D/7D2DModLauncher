@@ -1,5 +1,0 @@
-<configs>
-
-	<!-- <setattribute xpath="/windows/window[@name='windowPowerTriggerOptions']/rect[@name='content']/grid[@name='stats']" name="visibility">false</setattribute> -->
-
-</configs>

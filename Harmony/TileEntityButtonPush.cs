@@ -182,20 +182,8 @@ public class TileEntityButtonPush : TileEntityPoweredTrigger
 	protected override void setModified()
 	{
 		base.setModified();
-		// UpdateEmissionColor(null);
+		// Handles disconnects
+		UpdateEmissionColor(null);
 	}
 
-    /*
-  public override void HandleDisconnectChildren()
-  {
-    base.HandleDisconnectChildren();
-    Log.Out("HandleDisconnectChildren");
-  }
-
-  public override void HandleDisconnect()
-  {
-    base.HandleDisconnect();
-    Log.Out("HandleDisconnect");
-  }
-*/
 }

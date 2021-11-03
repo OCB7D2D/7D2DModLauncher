@@ -1,2 +1,4 @@
 Key,File,Type,UsedInMainMenu,NoTranslate,english,Context / Alternate Text,german,latam,french,italian,japanese,koreana,polish,brazilian,russian,turkish,schinese,tchinese,spanish
+ocbPushButton1,UI,Menu,,,Push Button
+ocbPushButtonDesc,UI,Menu,,,Button to form push button circuits.
 ocbBlockPushPowerButton,UI,HUD,,,Push Button,Schalter betätigen

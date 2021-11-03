@@ -1,18 +1,16 @@
-# OCB Electricity Solar Recipes Mod - 7 Days to Die Addon
+# OCB Electricity Push Button Circuits - 7 Days to Die Addon
 
-This (XML-Only) Modlets adds two recipes to make solar panels
-and cells craftable within the workbench. Both items are locked
-behind the advanced engineering perk. For solar panels you'll
-need level four, while solar cells can be crafted after level 2.
-Quality will be depending on your perk level. Level 6 solar cells
-can still only be bought at traders.
+This (Harmony) Mod adds new blocks that support push button
+circuits (those you often find in your home or in staircases).
+Each button in line basically actuates the root button when
+pushed. These work similar like regular trigger groups, but
+only the root item is actually actuated. These also contribute
+to regular trigger groups. You can mix these with other triggers.
+Use power relays to break a line into two groups.
+
+There is a special mode if you set the power duration to always.
+In this mode every push on any button will toggle the root.
+This way you can turn lights on and off at any button.
 
 ## Materials
 
-To craft solar cells you will need broken glass, as there is no
-other glass material beside the bullet-proof glass block. Since it
-felt a bit "wrong" to use the bullet-proof glass block I've added
-another recipe to create broken glass inside the forge. Additionaly
-you will need one acid bottle to make for more scarcity. The solar
-panel itself is crafted with regular materials (e.g. forged steel
-etc.) and steel- and robotics tools in order to increase scarcity.
