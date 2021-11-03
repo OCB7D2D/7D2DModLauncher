@@ -69,26 +69,4 @@ public class OcbElectricityButtonsPush
         }
     }
 
-
-
-    [HarmonyPatch(typeof (GameManager))]
-    [HarmonyPatch("OpenTileEntityUi")]
-    public class GameManager_OpenTileEntityUi
-    {
-        public static void Postfix(GameManager __instance, int _entityIdThatOpenedIt, TileEntity _te, string _customUi, World ___m_World)
-        {
-            LocalPlayerUI uiForPlayer = LocalPlayerUI.GetUIForPlayer(___m_World.GetEntity(_entityIdThatOpenedIt) as EntityPlayerLocal);
-            switch (_te)
-            {
-                case TileEntityButtonPush _:
-                    if (!((UnityEngine.Object) uiForPlayer != (UnityEngine.Object) null)) return;
-                    TileEntityPoweredTrigger item = new TileEntityPoweredTrigger(_te.GetChunk());
-                    ((XUiC_PowerTriggerWindowGroup) ((XUiWindowGroup) uiForPlayer.windowManager.GetWindow("powertrigger")).Controller).TileEntity = item;
-                    uiForPlayer.windowManager.Open("powertrigger", true);
-                break;
-            }
-        }
-    }
-
 }
-

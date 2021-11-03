@@ -54,7 +54,7 @@ public class BlockButtonPush : BlockPowered
   {
     TileEntityButtonPush entityPoweredTrigger = new TileEntityButtonPush(chunk);
     entityPoweredTrigger.PowerItemType =  (PowerItem.PowerItemTypes) 243;
-    // entityPoweredTrigger.TriggerType = PowerTrigger.TriggerTypes.Motion;
+    entityPoweredTrigger.TriggerType = PowerTrigger.TriggerTypes.Motion;
     return (TileEntityPowered) entityPoweredTrigger;
   }
 

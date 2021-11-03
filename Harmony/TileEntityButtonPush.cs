@@ -4,10 +4,8 @@ using DMT;
 using HarmonyLib;
 using UnityEngine;
 
-public class TileEntityButtonPush : TileEntityPowered
+public class TileEntityButtonPush : TileEntityPoweredTrigger
 {
-
-	public TileEntityPoweredTrigger.ClientTriggerData ClientData = new TileEntityPoweredTrigger.ClientTriggerData();
 
 	public bool hasToggle = false;
 
@@ -18,31 +16,19 @@ public class TileEntityButtonPush : TileEntityPowered
     {
     }
 
-	// public bool Activate(bool activated, bool isOn)
-	// {
-	// 	World world = GameManager.Instance.World;
-	// 	BlockValue block = this.chunk.GetBlock(this.localChunkPos);
-	// 	return Block.list[block.type].ActivateBlock((WorldBase) world, this.GetClrIdx(), this.ToWorldPos(), block, isOn, activated);
-	// }
-
     public override TileEntityType GetTileEntityType()
     {
         // really just an arbitrary number
         // I tend to use number above 241
-  // return TileEntityType.Trigger;
         return (TileEntityType) 243;
     }
 
 
-	public TileEntityButtonPush GetPushButtonCircuitRoot2()
+	public TileEntityButtonPush GetPushButtonCircuitRoot()
 	{
 		TileEntityButtonPush node = this;
 		while (node != null)
 		{
-			if (node.PowerItem == null) {
-				//node.PowerItem = node.CreatePowerItemForTileEntity
-				//	((ushort) node.chunk.GetBlock(node.localChunkPos).type);
-			}
 			if (node.PowerItem != null && node.PowerItem.Parent != null) {
 				if (node.PowerItem.Parent.TileEntity is TileEntityButtonPush btn) {
 					node = btn;
@@ -52,27 +38,12 @@ public class TileEntityButtonPush : TileEntityPowered
 			break;
 		}
 		return node;
-  }
-
-  static public TileEntityButtonPush GetPushButtonCircuitRoot(TileEntityButtonPush node)
-  {
-	  while (node != null)
-	  {
-		if (node.GetPowerItem() != null && node.GetPowerItem().Parent != null) {
-			if (node.GetPowerItem().Parent.TileEntity is TileEntityButtonPush btn) {
-				node = btn;
-				continue;
-			}
-		}
-		break;
-	  }
-	  return node;
-  }
+	}
 
 	public void UpdateStates(TileEntityButtonPush tileEntity, TileEntityButtonPush root = null)
 	{
 		if (tileEntity == null || tileEntity.GetPowerItem() == null) return;
-		if (root == null) root = GetPushButtonCircuitRoot(root);
+		if (root == null) root = GetPushButtonCircuitRoot();
 		for (int i = 0; i < tileEntity.GetPowerItem().Children.Count; i++) {
 			PowerItem child = tileEntity.GetPowerItem().Children[i];
 			if (child.TileEntity is TileEntityButtonPush te) {
@@ -84,35 +55,71 @@ public class TileEntityButtonPush : TileEntityPowered
 
 	public void HandleClientToggle()
 	{
-		TileEntityButtonPush root = GetPushButtonCircuitRoot(this);
-		root.IsTriggered = !root.IsTriggered;
-		UpdateStates(root, root);
+		TileEntityButtonPush root = GetPushButtonCircuitRoot();
+		if (root.PowerItem is PowerTrigger trigger && trigger.IsActive) {
+			if (trigger.TriggerPowerDuration == PowerTrigger.TriggerPowerDurationTypes.Always) {
+				root.ResetTrigger();
+				UpdateStates(root, root);
+			} else {
+				root.IsTriggered = true;
+				UpdateStates(root, root);
+			}
+		} else {
+			root.IsTriggered = true;
+			UpdateStates(root, root);
+		}
 
 	}
 
-	public void HandleServerToggle()
+	public void UpdateTriggerGroupForClients(TileEntityButtonPush cur)
 	{
-		TileEntityButtonPush root = GetPushButtonCircuitRoot(this);
+		// if (reset) ResetTrigger();
+		for (int i = 0; i < GetPowerItem().Children.Count; i++)
+		{
+			var item = GetPowerItem().Children[i];
+			if (item.TileEntity is TileEntityButtonPush btn) {
+				btn.UpdateTriggerGroupForClients(cur);
+				if (btn != cur) btn.SetModified();
+			}
+		}
+		if (cur != this) SetModified();
 	}
 
 	public override void read(PooledBinaryReader _br, TileEntity.StreamModeRead _eStreamMode)
 	{
+		Log.Out("Read Tile Entity Push Btn " + _eStreamMode);
+
 		base.read(_br, _eStreamMode);
+		// _br.ReadByte();
+		// _br.ReadString();
 		Log.Out("Read Tile Entity Push Btn " + _eStreamMode);
 		if (_eStreamMode == TileEntity.StreamModeRead.FromClient)
 		{
-			if (this.PowerItem == null)
-				this.PowerItem = this.CreatePowerItemForTileEntity((ushort) this.chunk.GetBlock(this.localChunkPos).type);
-			TileEntityButtonPush root = GetPushButtonCircuitRoot2();
+			TileEntityButtonPush root = GetPushButtonCircuitRoot();
 			PowerTrigger item = root.PowerItem as PowerTrigger;
+			bool hasChanged = false;
+			var wasTriggerPowerDelay = item.TriggerPowerDelay;
+			var wasTriggerPowerDuration = item.TriggerPowerDuration;
 			item.TriggerPowerDelay = (PowerTrigger.TriggerPowerDelayTypes) _br.ReadByte();
 			item.TriggerPowerDuration = (PowerTrigger.TriggerPowerDurationTypes) _br.ReadByte();
-			if (_br.ReadBoolean()) {}; // Handle reset
-			if (_br.ReadBoolean()) HandleClientToggle();
+			if (item.TriggerPowerDelay != wasTriggerPowerDelay) hasChanged = true;
+			if (item.TriggerPowerDuration != wasTriggerPowerDuration) hasChanged = true;
+			Log.Out("Read from Client " + item.TriggerPowerDuration);
+			bool wasReset = _br.ReadBoolean();
+			bool wasToggle = _br.ReadBoolean();
+			// On Toggle, we should check if something changes from inactive to active
+			// or from active to inactive, meaning all must be updated. Otherwise nothing
+			// must be done ...
+			if (wasToggle) HandleClientToggle();
+			// In case of reset, we should check if not already inactive.
+			else if (wasReset) root.ResetTrigger();
+			// Otherwise only update everybody with new config options
+			else if (hasChanged) root.UpdateTriggerGroupForClients(this);
 		}
 		else if (_eStreamMode == TileEntity.StreamModeRead.FromServer) {
 			this.ClientData.Property1 = _br.ReadByte();
 			this.ClientData.Property2 = _br.ReadByte();
+			Log.Out("Read from server " + this.ClientData.Property2);
 			serverTriggered = _br.ReadBoolean();
 			UpdateEmissionColor();
 		}
@@ -120,49 +127,49 @@ public class TileEntityButtonPush : TileEntityPowered
 
 	public override void write(PooledBinaryWriter _bw, TileEntity.StreamModeWrite _eStreamMode)
 	{
-		base.write(_bw, _eStreamMode);
+		Log.Out("+Write");
+		bool wasReset = false;
 		if (_eStreamMode == TileEntity.StreamModeWrite.ToServer) 
 		{
+			wasReset = this.ClientData.ResetTrigger;
+			this.ClientData.ResetTrigger = false;
+		}
+		base.write(_bw, _eStreamMode);
+		// _bw.Write((byte) this.TriggerType);
+//    if (this.TriggerType == PowerTrigger.TriggerTypes.Motion)
+//      _bw.Write(this.ownerID);
+		Log.Out("-Write");
+		if (_eStreamMode == TileEntity.StreamModeWrite.ToServer) 
+		{
+			this.ClientData.ResetTrigger = false;
 			_bw.Write(this.ClientData.Property1);
 			_bw.Write(this.ClientData.Property2);
-			_bw.Write(this.ClientData.ResetTrigger);
-			this.ClientData.ResetTrigger = false;
+			Log.Out("Write To Server " + this.ClientData.Property2);
+			_bw.Write(wasReset);
 			_bw.Write(hasToggle);
 			hasToggle = false;
 		}
 		else if (_eStreamMode == TileEntity.StreamModeWrite.ToClient) 
 		{
-			TileEntityButtonPush root = GetPushButtonCircuitRoot2();
+			TileEntityButtonPush root = GetPushButtonCircuitRoot();
 			PowerTrigger item = root.PowerItem as PowerTrigger;
 			_bw.Write((byte) item.TriggerPowerDelay);
 			_bw.Write((byte) item.TriggerPowerDuration);
+			Log.Out("Write to client " + item.TriggerPowerDuration);
 			_bw.Write(item.IsActive);
 		}
 	}
 
-  public bool IsTriggered
-  {
-    get => ((PowerTrigger) this.PowerItem).IsTriggered;
-    set
-    {
-      PowerTrigger powerItem = this.PowerItem as PowerTrigger;
-      powerItem.IsTriggered = value;
-    }
-  }
-
-  public override PowerItem CreatePowerItem() {
-		// var item = base.CreatePowerItem();
-		Log.Out("Create Power Item ");
-		return (PowerItem) new PowerTrigger()
-		{
-			TriggerType = PowerTrigger.TriggerTypes.Motion
-		};
+  protected override PowerItem CreatePowerItem() {
+	  var item = base.CreatePowerItem();
+	  Log.Out("Create Power Item " + item);
+	  return item;
   } 
 
 	// Direct children represent same state as `root`
     public virtual void UpdateEmissionColor(TileEntityButtonPush root = null)
     {
-		if (root == null) root = GetPushButtonCircuitRoot(this);
+		if (root == null) root = GetPushButtonCircuitRoot();
         var pos = ToWorldPos();
         var _world = GameManager.Instance.World;
 		if (_world == null) return;
@@ -210,67 +217,11 @@ public class TileEntityButtonPush : TileEntityPowered
         }
     }
 
-  public byte Property1
-  {
-    get
-    {
-      if (!SingletonMonoBehaviour<ConnectionManager>.Instance.IsServer)
-        return this.ClientData.Property1;
-      return (byte) (this.PowerItem as PowerTrigger).TriggerPowerDelay;
-    }
-    set
-    {
-      if (SingletonMonoBehaviour<ConnectionManager>.Instance.IsServer)
-      {
-          (this.PowerItem as PowerTrigger).TriggerPowerDelay = (PowerTrigger.TriggerPowerDelayTypes) value;
-      }
-      else
-        this.ClientData.Property1 = value;
-    }
-  }
-
-  public byte Property2
-  {
-    get
-    {
-      if (!SingletonMonoBehaviour<ConnectionManager>.Instance.IsServer)
-        return this.ClientData.Property2;
-      return (byte) (this.PowerItem as PowerTrigger).TriggerPowerDuration;
-    }
-    set
-    {
-      if (SingletonMonoBehaviour<ConnectionManager>.Instance.IsServer)
-      {
-          (this.PowerItem as PowerTrigger).TriggerPowerDuration = (PowerTrigger.TriggerPowerDurationTypes) value;
-      }
-      else
-        this.ClientData.Property2 = value;
-    }
-  }
-
-  public bool ShowTriggerOptions
-  {
-    get
-    {
-		return true;
-    }
-  }
-
 	protected override void setModified()
 	{
 		base.setModified();
 		UpdateEmissionColor(null);
 	}
-
-  public class ClientTriggerData
-  {
-    public byte Property1;
-    public byte Property2;
-    public int TargetType = 3;
-    public bool ShowTriggerOptions;
-    public bool ResetTrigger;
-    public bool HasChanges;
-  }
 
     /*
   public override void HandleDisconnectChildren()
