@@ -5,12 +5,6 @@
 		<Description value="Push Button Circuits (toggle or power duration)" />
 		<Website value="https://github.com/OCB7D2D/ElectricityButtonsPush" />
 		<Author value="mgreter" />
-		<Version value="0.1" />
+		<Version value="0.1.0" />
 	</ModInfo>
-	<DMT>
-		<dependencies>
-			<dependency>ElectricityOverhaul</dependency>
-		</dependencies>
-		<conflicts />
-	</DMT>
 </xml>

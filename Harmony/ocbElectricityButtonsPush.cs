@@ -35,7 +35,7 @@ public class OcbElectricityButtonsPush
 
     [HarmonyPatch(typeof (PowerTrigger))]
     [HarmonyPatch("HandleDisconnectChildren")]
-    public class PowerTrigger_HandleDisconnect34
+    public class PowerTrigger_HandleDisconnect
     {
         public static void Postfix(PowerTrigger __instance)
         {
@@ -60,10 +60,8 @@ public class OcbElectricityButtonsPush
         {
             // var stats = __instance.GetChildById("stats");
             if (___tileEntity is TileEntityButtonPush pushbtn) {
-                Log.Out("Disable part of the UI");
                 ___pnlTargeting.ViewComponent.IsVisible = false;
             } else {
-                Log.Out("Enable part of the UI");
                 ___pnlTargeting.ViewComponent.IsVisible = true;
             }
         }
