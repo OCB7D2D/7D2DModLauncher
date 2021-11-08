@@ -1,0 +1,47 @@
+<configs>
+
+	<append xpath="/blocks">
+
+		<block name="ocbPushButton01">
+
+			<property name="CreativeMode" value="Player"/>
+			<property name="Class" value="ButtonPush, Harmony-ElectricityButtonsPush"/>
+			<property name="CustomIcon" value="PushButton01"/>
+			<property name="Shape" value="ModelEntity" />
+			<property name="Model" value="#@modfolder:Resources/ButtonsPush.unity3d?PushButton1" />
+			<property name="DescriptionKey" value="ocbPushButtonDesc"/>
+			<property name="Mesh" value="models"/>
+
+			<property name="Material" value="Mmetal_weak"/>
+			<property name="StabilitySupport" value="false"/>
+			<property name="IsTerrainDecoration" value="false"/>
+			<property name="ImposterDontBlock" value="true"/>
+			<property name="Collide" value="movement,melee,bullet,arrow,rocket"/>
+			<property name="UnlockedBy" value="perkAdvancedEngineering"/>
+
+			<property name="Group" value="Science"/>
+			<property name="SortOrder1" value="70a0"/>
+			<property name="FilterTags" value="fdecor,felectrical"/>
+
+			<property name="RequiredPower" value="1"/>
+			<property name="EconomicValue" value="10"/>
+			<property name="EconomicBundleSize" value="10"/>
+
+			<property name="TriggerType" value="Switch"/>
+			<property name="HandleFace" value="South"/>
+			<property name="WireOffset" value="0,0,-.5"/>
+
+			<property class="RepairItems">
+				<property name="resourceScrapPolymers" value="2"/>
+			</property>
+
+			<drop event="Harvest" name="resourceElectricParts" count="1" prob="0.2" tag="salvageHarvest"/>
+			<drop event="Destroy" name="resourceScrapPolymers" count="1,2"/>
+
+			<property name="TakeDelay" value="5"/>
+
+		</block>
+
+	</append>
+
+</configs>

@@ -1,0 +1,5 @@
+Key,File,Type,UsedInMainMenu,NoTranslate,english,Context / Alternate Text,german,latam,french,italian,japanese,koreana,polish,brazilian,russian,turkish,schinese,tchinese,spanish
+ocbPushButton01,UI,Menu,,,Push Button
+xuiLightOptions,UI,Menu,,,Light Options
+ocbPushButtonDesc,UI,Menu,,,"Directly adjacent push buttons form a push button circuits, as e.g. often seen in stair cases. Each button can trigger the group to either keep it on for another defined duration, or to toggle the consumers on and off.
+ocbBlockPushPowerButton,UI,HUD,,,Push Button,Schalter betätigen
