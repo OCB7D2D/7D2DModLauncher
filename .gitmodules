@@ -1,0 +1,24 @@
+[submodule "ElectricityOverhaul"]
+	path = ElectricityOverhaul
+	url = https://github.com/OCB7D2D/ElectricityOverhaul
+[submodule "ElectricityWorkarounds"]
+	path = ElectricityWorkarounds
+	url = https://github.com/OCB7D2D/ElectricityWorkarounds
+[submodule "ElectricityNoWires"]
+	path = ElectricityNoWires
+	url = https://github.com/OCB7D2D/ElectricityNoWires
+[submodule "ElectricityWireColors"]
+	path = ElectricityWireColors
+	url = https://github.com/OCB7D2D/ElectricityWireColors
+[submodule "ElectricityButtonsPush"]
+	path = ElectricityButtonsPush
+	url = https://github.com/OCB7D2D/ElectricityButtonsPush
+[submodule "ElectricityLamps"]
+	path = ElectricityLamps
+	url = https://github.com/OCB7D2D/ElectricityLamps
+[submodule "ClaimAutoRepair"]
+	path = ClaimAutoRepair
+	url = https://github.com/OCB7D2D/ClaimAutoRepair
+[submodule "ElectricitySolarRecipes"]
+	path = ElectricitySolarRecipes
+	url = https://github.com/OCB7D2D/ElectricitySolarRecipes
