@@ -1,4 +1,2 @@
 Default,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha19/Default2.txt
 Alpha 19 Modlets,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha19/Default2.txt
-Alpha 18 Modlets,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha18/DefaultProfile.txt
-Alpha 17 Modlets,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha17/DefaultProfile.txt
