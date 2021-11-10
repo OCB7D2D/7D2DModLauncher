@@ -1,0 +1,4 @@
+Alpha19,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha19/Default.xml
+Alpha18,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha18/Default.xml
+Alpha17,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Alpha17/Default.xml
+Alpha16,https://raw.githubusercontent.com/OCB7D2D/7D2DModLauncher/master/Default.xml
